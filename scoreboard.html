@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Volleyball Scoreboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="scoreboard">
+
+<div id="scoreboard">
+    <div class="team-name" id="team1_name">Home Team</div>
+
+    <div class="sets-box">
+        <span class="sets-value" id="team1_sets">0</span>
+    </div>
+
+    <div class="points-box">
+        <span class="points-value" id="team1_points">0</span>
+    </div>
+
+    <div class="points-box">
+        <span class="points-value" id="team2_points">0</span>
+    </div>
+
+    <div class="sets-box">
+        <span class="sets-value" id="team2_sets">0</span>
+    </div>
+
+    <div class="team-name" id="team2_name">Away Team</div>
+</div>
+
+<script>
+    const API_URL = 'http://127.0.0.1:8000';
+
+    function updateDisplay() {
+        fetch(API_URL)
+            .then(response => response.json()
+                .then(data => {
+                    // Équipe 1
+                    document.getElementById('team1_name').innerText = data[0].name;
+                    document.getElementById('team1_points').innerText = data[0].points;
+                    document.getElementById('team1_sets').innerText = data[0].sets;
+
+                    // Équipe 2
+                    document.getElementById('team2_name').innerText = data[1].name;
+                    document.getElementById('team2_points').innerText = data[1].points;
+                    document.getElementById('team2_sets').innerText = data[1].sets;
+                })
+                .catch(error => console.error('Erreur de chargement du score:', error)));
+    }
+
+    // Polling : Vérification du score toutes les 2s
+    setInterval(updateDisplay, 2000);
+    updateDisplay();
+</script>
+</body>
+</html>

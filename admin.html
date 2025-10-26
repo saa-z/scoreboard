@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Volleyball Scoreboard Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="admin">
+<h1>Pilotage Scoreboard Volley-ball</h1>
+
+<div id="scoreboard">
+    <div class="team-box" id="team1_display">
+        <span class="name" id="name1">Home Team</span>
+        <span class="score" id="score1">0</span>
+        <span class="sets" id="sets1">Sets: 0</span>
+    </div>
+    <div class="vertical-divider"></div>
+    <div class="team-box" id="team2_display">
+        <span class="name" id="name2">Away Team</span>
+        <span class="score" id="score2">0</span>
+        <span class="sets" id="sets2">Sets: 0</span>
+    </div>
+</div>
+
+<div id="controls-container">
+    <div class="control-section">
+        <h2>POINTS</h2>
+        <div class="points-controls">
+            <div class="buttons-cell">
+                <button class="main-btn" onclick="changeScore(0, +1)">+1</button>
+            </div>
+            <div class="buttons-cell">
+                <button class="main-btn" onclick="changeScore(1, +1)">+1</button>
+            </div>
+            <div class="buttons-cell">
+                <button class="small-btn" onclick="changeScore(0, -1)">-1</button>
+            </div>
+            <div class="buttons-cell">
+                <button class="small-btn" onclick="changeScore(1, -1)">-1</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="control-section">
+        <h2>SETS</h2>
+        <div class="sets-controls">
+            <div class="buttons-cell">
+                <button class="main-btn" onclick="changeSet(0, +1)">+1</button>
+            </div>
+            <div class="buttons-cell">
+                <button class="main-btn" onclick="changeSet(1, +1)">+1</button>
+            </div>
+            <div class="buttons-cell">
+                <button class="small-btn" onclick="changeSet(0, -1)">-1</button>
+            </div>
+            <div class="buttons-cell">
+                <button class="small-btn" onclick="changeSet(1, -1)">-1</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button id="reset-button" onclick="resetScore()">Clear scores</button>
+
+<div class="control-section team-names-section">
+    <h2>TEAM NAMES</h2>
+    <div class="points-controls">
+        <div class="buttons-cell name-input-cell">
+            <input type="text" id="team1-name-input" placeholder="Team 1 name" class="team-name-input">
+            <button id="update-team1-btn" onclick="changeName(0)">Update</button>
+        </div>
+        <div class="buttons-cell name-input-cell">
+            <input type="text" id="team2-name-input" placeholder="Team 2 name" class="team-name-input">
+            <button id="update-team2-btn" onclick="changeName(1)">Update</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API = "http://127.0.0.1:8000";
+    let teams = [];
+
+    window.onload = async () => {
+        const res = await fetch(`${API}/`);
+        teams = await res.json();
+        updateDisplay();
+        document.getElementById("team1-name-input").value = teams[0].name;
+        document.getElementById("team2-name-input").value = teams[1].name;
+    };
+
+    function updateDisplay() {
+        document.getElementById("score1").textContent = teams[0].points;
+        document.getElementById("sets1").textContent = "Sets: " + teams[0].sets;
+        document.getElementById("name1").textContent = teams[0].name;
+
+        document.getElementById("score2").textContent = teams[1].points;
+        document.getElementById("sets2").textContent = "Sets: " + teams[1].sets;
+        document.getElementById("name2").textContent = teams[1].name;
+    }
+
+    async function updateScore(teamIndex, newPoints) {
+        const res = await fetch(`${API}/scores/${teamIndex}?points=${newPoints}`, {method: "PUT"});
+        teams[teamIndex] = await res.json();
+        updateDisplay();
+    }
+
+    async function updateSets(teamIndex, newSets) {
+        const res = await fetch(`${API}/scores/${teamIndex}?sets=${newSets}`, {method: "PUT"});
+        teams[teamIndex] = await res.json();
+        updateDisplay();
+    }
+
+    function changeScore(teamId, delta) {
+        updateScore(teamId, Math.max(0, teams[teamId].points + delta));
+    }
+
+    function changeSet(teamId, delta) {
+        updateSets(teamId, Math.max(0, teams[teamId].sets + delta));
+    }
+
+    async function resetScore() {
+        for (let i = 0; i < teams.length; i++) {
+            await fetch(`${API}/scores/${i}?points=0`, {method: "PUT"});
+        }
+        const res = await fetch(`${API}/`);
+        teams = await res.json();
+        updateDisplay();
+    }
+
+    async function changeName(teamIndex) {
+        const inputId = teamIndex === 0 ? "team1-name-input" : "team2-name-input";
+        const newName = document.getElementById(inputId).value.trim();
+
+        if (!newName) {
+            alert("Please enter a team name");
+            return;
+        }
+
+        const res = await fetch(`${API}/names/${teamIndex}`, {
+            method: "PUT",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(newName)
+        });
+
+        teams[teamIndex] = await res.json();
+        updateDisplay();
+    }
+</script>
+</body>
+</html>

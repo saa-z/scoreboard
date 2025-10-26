@@ -1,0 +1,16 @@
+# Test your FastAPI endpoints
+
+GET http://127.0.0.1:8000/
+Accept: application/json
+
+###
+
+PUT http://127.0.0.1:8000/scores/1?points=21
+Accept: application/json
+
+###
+
+PUT http://127.0.0.1:8000/names/1
+Accept: application/json
+
+"Portes de l'Essonne"
