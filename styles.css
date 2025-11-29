@@ -171,6 +171,7 @@ button[disabled] {
 
 /* RESET & UPDATE BUTTONS */
 #reset-button,
+#switch-button,
 #update-team1-btn,
 #update-team2-btn {
     margin-top: 36px;
@@ -185,22 +186,13 @@ button[disabled] {
     transition: transform 0.1s, background-color 0.12s;
 }
 
-#reset-button:hover,
-#update-team1-btn:hover,
-#update-team2-btn:hover {
-    transform: scale(1.02);
+#switch-button {
+    font-size: 1.5rem;
 }
 
 #update-team1-btn,
 #update-team2-btn {
     margin-top: 0;
-}
-
-/* DIVIDERS */
-.vertical-divider {
-    width: 2px;
-    height: 80%;
-    background-color: var(--text-color);
 }
 
 /* TEAM NAMES */

@@ -16,7 +16,7 @@
         <span class="score" id="score1">0</span>
         <span class="sets" id="sets1">Sets: 0</span>
     </div>
-    <div class="vertical-divider"></div>
+<button id="switch-button" onclick="switchTeams()">↔</button>
     <div class="team-box" id="team2_display">
         <span class="name" id="name2">Away Team</span>
         <span class="score" id="score2">0</span>
@@ -145,6 +145,12 @@
         });
 
         teams[teamIndex] = await res.json();
+        updateDisplay();
+
+    }
+    async function switchTeams(){
+        const res = await fetch(`${API}/switch`, {method: "PUT"});
+        teams = await res.json();
         updateDisplay();
     }
 </script>
